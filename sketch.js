@@ -12,11 +12,13 @@ var pontuacao=0;
 
 var fimDeJogo, reiniciar;
 
-var c1,c2,c3, count;
-
+var c1,c2,c3;
+var heart=[];
+var count =0;
 
 function preload(){
-  logan_correndo =   loadAnimation("dog.png");
+  logan_correndo =   loadAnimation("img/l1.png","img/l2.png","img/l3.png","img/l4.png","img/l5.png","img/l6.png",
+  "img/l7.png","img/l8.png","img/l9.png","img/l10.png");
   logan_colidiu = loadAnimation("dog.png");
   
   imagemDoSolo = loadImage("ground2.png");
@@ -43,7 +45,7 @@ function setup() {
   createCanvas(600, 200);
   
   logan = createSprite(50,100,20,50);
-  logan.debug = true;
+  //logan.debug = true;
   logan.setCollider("rectangle",0,0,0,70,70);
   logan.addAnimation("running", logan_correndo);
   logan.addAnimation("collided", logan_colidiu);
@@ -75,7 +77,7 @@ function setup() {
   pontuacao = 0;
 
   //pontuaçao
-  count = 0;
+  
   c1 = createSprite(15,20,20,20);
   c1.addImage(imgC1);
   c1.scale = 0.05;
@@ -85,6 +87,7 @@ function setup() {
   c3 = createSprite(75,20,20,20);
   c3.addImage(imgC3);
   c3.scale = 0.05;
+  heart = [c1,c2,c3];
 }
 
 function draw() {
@@ -113,23 +116,17 @@ function draw() {
    
     if(grupoDeObstaculos.isTouching(logan)){
       pontuacao = pontuacao - 100; 
-      count=count+1;
+      count++;
+      //setTimeout(count)
     }
-    if(count===1){
-      c1.visible = false; 
-    }else if(count ===2){
-      c2.visible = false; 
-    }else if(count ===3){
-      c3.visible = false; 
-    }else{
-      count = 0
-    }
-
-    if(pontuacao <= 0 || count >= 4 ){
+    
+    
+    if(pontuacao <= 0){
       estadoJogo = ENCERRAR;
+      
     }
 
-    console.log(count)
+  
    
   }
   else if (estadoJogo === ENCERRAR) {
@@ -157,7 +154,20 @@ function draw() {
   
   drawSprites();
 }
-
+setTimeout((count) => {
+  if(count===1){
+    c1.visible = false;
+     
+  } ;
+  if(count===2){
+    c2.visible = false;
+     
+  } 
+  if(count===3){
+    c3.visible = false;
+     
+  } 
+}, timeout);
 function gerarNuvens() {
   //escreva o código aqui para gerar as nuvens 
   if (frameCount % 60 === 0) {
@@ -185,7 +195,7 @@ function gerarObstaculos() {
     var obstaculo = createSprite(600,150,10,40);
     //obstaculo.debug = true;
     obstaculo.velocityX = -(6 + 3*pontuacao/100);
-    obstaculo.debug =true;
+    //obstaculo.debug =true;
     obstaculo.setCollider("rectangle",0,0,60,60)
     
     //gerar obstáculos aleatórios
@@ -218,6 +228,10 @@ function reset(){
   estadoJogo = JOGAR;
   fimDeJogo.visible = false;
   reiniciar.visible = false;
+  count=0;
+  c1.visible = true;
+  c2.visible = true;
+  c3.visible = true;
   
   grupoDeObstaculos.destroyEach();
   grupoDeNuvens.destroyEach();
