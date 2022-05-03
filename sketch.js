@@ -1,6 +1,9 @@
-var JOGAR = 1;
-var ENCERRAR = 0;
-var estadoJogo = JOGAR;
+var ESPERAR;
+var JOGAR=1;
+var ENCERRAR=0;
+
+var estadoJogo = "ESPERAR";
+
 
 var trex, trex_correndo, trex_colidiu;
 var solo, soloInvisivel, imagemDoSolo;
@@ -11,9 +14,9 @@ var grupodeobstaculos, obstaculo1, obstaculo2, obstaculo3, obstaculo4, obstaculo
 var pontuacao=0;
 
 var fimDeJogo, reiniciar;
-
+var play;
 var c1,c2,c3;
-var heart=[];
+
 var count =0;
 
 function preload(){
@@ -39,6 +42,7 @@ function preload(){
   imgC1 =  loadImage("coracao.png");
   imgC2 =  loadImage("coracao.png");
   imgC3 =  loadImage("coracao.png");
+  playImg = loadImage("img/play.png")
 }
 
 function setup() {
@@ -51,22 +55,31 @@ function setup() {
   logan.addAnimation("collided", logan_colidiu);
   logan.scale = 0.3;
   
+  
   solo = createSprite(200,180,400,20);
   solo.addImage("ground",imagemDoSolo);
   solo.x = solo.width /2;
-  //solo.velocityX = -(6 + 3*pontuacao/100);
   
+  //solo.velocityX = -(6 + 3*pontuacao/100);
+  play = createSprite(300,100);
+  play.addImage(playImg);
+
   fimDeJogo = createSprite(300,100);
   fimDeJogo.addImage(imgFimDeJogo);
   
   reiniciar = createSprite(300,140);
   reiniciar.addImage(imgReiniciar);
+  //reiniciar.debug=true;
   
+  play.scale = 0.3;
   fimDeJogo.scale = 0.5;
   reiniciar.scale = 0.5;
 
   fimDeJogo.visible = false;
   reiniciar.visible = false;
+  logan.visible = false;
+  solo.visible=false;
+
   
   soloInvisivel = createSprite(200,160,400,10);
   soloInvisivel.visible = false;
@@ -87,15 +100,30 @@ function setup() {
   c3 = createSprite(75,20,20,20);
   c3.addImage(imgC3);
   c3.scale = 0.05;
-  heart = [c1,c2,c3];
+  c1.visible = false;
+  c2.visible = false;
+  c3.visible = false
+  
 }
 
 function draw() {
   //logan.debug = true;
   background(255);
-  text("Pontuação: "+ pontuacao, 500,50);
-  
-  if (estadoJogo === JOGAR){
+  if(estadoJogo === "ESPERAR"){
+    if(mousePressedOver(play)){
+      estadoJogo = JOGAR;
+      logan.visible = true;
+      solo.visible=true;
+      c1.visible = true;
+      c2.visible = true;
+      c3.visible = true
+
+      play.visible = false;
+    }
+    
+  }
+    if (estadoJogo === JOGAR){
+    text("Pontuação: "+ pontuacao, 500,50);
     pontuacao = pontuacao + Math.round(getFrameRate()/60);
     //solo.velocityX = -(6 + 3*pontuacao/100);
   
@@ -117,11 +145,12 @@ function draw() {
     if(grupoDeObstaculos.isTouching(logan)){
       pontuacao = pontuacao - 100; 
       count++;
-      //setTimeout(count)
+      lifes(count);
+     
     }
     
     
-    if(pontuacao <= 0){
+    if(pontuacao <=-1){
       estadoJogo = ENCERRAR;
       
     }
@@ -154,20 +183,23 @@ function draw() {
   
   drawSprites();
 }
-setTimeout((count) => {
+
+function lifes(count){
   if(count===1){
     c1.visible = false;
+    logan.x = logan.x+100;
      
-  } ;
-  if(count===2){
+  }else if(count===2){
     c2.visible = false;
+    logan.x = logan.x+100;
      
-  } 
-  if(count===3){
+  } else if(count===3){
     c3.visible = false;
+    logan.x = logan.x+100;
      
   } 
-}, timeout);
+}
+
 function gerarNuvens() {
   //escreva o código aqui para gerar as nuvens 
   if (frameCount % 60 === 0) {
